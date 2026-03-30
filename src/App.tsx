@@ -24,7 +24,8 @@ import {
   ShoppingCart,
   Layout,
   Zap,
-  Layers
+  Layers,
+  FileText
 } from "lucide-react";
 import { useState, useEffect, FormEvent } from "react";
 import { Toaster, toast } from "sonner";
@@ -33,6 +34,7 @@ const EXPERIENCE = [
   {
     role: "SEO Executive",
     company: "TripzyGo",
+    domain: "tripzygo.in",
     period: "Mar 2024 – Present",
     description: "Spearheading the organic growth strategy for a leading travel platform. My work involves deep technical audits, advanced keyword research, and high-impact content strategy that consistently outperforms competitors in the SERPs.",
     highlights: [
@@ -46,6 +48,7 @@ const EXPERIENCE = [
   {
     role: "SEO Analyst",
     company: "Guest Blogging Technology",
+    domain: "guestbloggingtechnology.com",
     period: "Mar 2022 – Mar 2023",
     description: "Focused on building high-authority backlink profiles and executing large-scale outreach campaigns. I developed a proprietary guest blogging framework that improved domain authority for 20+ client sites.",
     highlights: [
@@ -59,6 +62,7 @@ const EXPERIENCE = [
   {
     role: "Digital Marketing Intern",
     company: "TripzyGo International",
+    domain: "tripzygo.in",
     period: "Internship",
     description: "Learned the fundamentals of SEO and digital marketing by supporting senior analysts. I was responsible for initial keyword research, metadata optimization, and social media content scheduling.",
     highlights: [
@@ -98,6 +102,61 @@ const EDUCATION = [
   { degree: "Bachelor of Computer Applications (BCA)", school: "Graduated 2024" },
   { degree: "Diploma", school: "DPG Polytechnic College - 2021" }
 ];
+
+// Reusable Image Component with Fallback and Loading States
+const SafeImage = ({ src, alt, className, objectFit = "cover", fallbackSrc, hideOnError, ...props }: any) => {
+  const [isError, setIsError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentSrc, setCurrentSrc] = useState(src);
+
+  useEffect(() => {
+    setCurrentSrc(src);
+    setIsError(false);
+    setIsLoading(true);
+  }, [src]);
+
+  const handleError = () => {
+    if (fallbackSrc && currentSrc !== fallbackSrc) {
+      setCurrentSrc(fallbackSrc);
+    } else {
+      setIsError(true);
+    }
+    setIsLoading(false);
+  };
+
+  if (isError && hideOnError) return null;
+
+  const placeholderColor = "bg-zinc-100";
+  const iconColor = "text-zinc-400";
+
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      {isLoading && !isError && (
+        <div className={`absolute inset-0 ${placeholderColor} animate-pulse flex items-center justify-center`}>
+          <Globe className={`w-4 h-4 ${iconColor} opacity-20`} />
+        </div>
+      )}
+      {isError ? (
+        <div className={`absolute inset-0 ${placeholderColor} flex items-center justify-center ${iconColor}`}>
+          <div className="flex flex-col items-center gap-2 opacity-20">
+            <Globe className="w-1/2 h-1/2" />
+            <span className="text-[8px] font-bold uppercase tracking-widest">Image Error</span>
+          </div>
+        </div>
+      ) : (
+        <img
+          src={currentSrc}
+          alt={alt}
+          className={`w-full h-full object-${objectFit} transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+          onLoad={() => setIsLoading(false)}
+          onError={handleError}
+          referrerPolicy="no-referrer"
+          {...props}
+        />
+      )}
+    </div>
+  );
+};
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
@@ -168,11 +227,11 @@ export default function App() {
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center p-1 shadow-sm border border-zinc-100 group-hover:scale-110 transition-transform">
-              <img 
+              <SafeImage 
                 src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" 
                 alt="Google" 
-                className="w-full h-full object-contain"
-                referrerPolicy="no-referrer"
+                className="w-full h-full"
+                objectFit="contain"
               />
             </div>
             <span className="text-xl font-display font-bold tracking-tight">
@@ -220,11 +279,10 @@ export default function App() {
           }}
           className="absolute top-20 left-10 w-32 h-32 md:w-48 md:h-48 -z-10 pointer-events-none"
         >
-          <img 
-            src="https://picsum.photos/seed/seo-corner-1/400/400" 
+          <SafeImage 
+            src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=400" 
             alt="SEO Decorative" 
-            className="w-full h-full object-cover rounded-3xl shadow-2xl"
-            referrerPolicy="no-referrer"
+            className="w-full h-full rounded-3xl shadow-2xl"
           />
         </motion.div>
 
@@ -244,21 +302,19 @@ export default function App() {
           }}
           className="absolute top-20 right-10 w-32 h-32 md:w-48 md:h-48 -z-10 pointer-events-none"
         >
-          <img 
-            src="https://picsum.photos/seed/seo-corner-2/400/400" 
+          <SafeImage 
+            src="https://images.unsplash.com/photo-1551288049-bbda38a5f452?auto=format&fit=crop&q=80&w=400" 
             alt="Marketing Decorative" 
-            className="w-full h-full object-cover rounded-3xl shadow-2xl"
-            referrerPolicy="no-referrer"
+            className="w-full h-full rounded-3xl shadow-2xl"
           />
         </motion.div>
 
         {/* Background Image Layer */}
         <div className="absolute inset-0 -z-20">
-          <img 
-            src="https://picsum.photos/seed/digital-marketing-bg/1920/1080?blur=8" 
+          <SafeImage 
+            src="https://images.unsplash.com/photo-1557838923-2985c318be48?auto=format&fit=crop&q=80&w=1920" 
             alt="Background" 
-            className="w-full h-full object-cover opacity-30"
-            referrerPolicy="no-referrer"
+            className="w-full h-full opacity-30"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white" />
         </div>
@@ -278,7 +334,7 @@ export default function App() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200">
-                  <img src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" className="w-3 h-3" alt="Google" />
+                  <SafeImage src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" className="w-3 h-3" alt="Google" objectFit="contain" />
                   <span className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
                     Google Certified
                   </span>
@@ -317,22 +373,21 @@ export default function App() {
               className="relative"
             >
               <div className="aspect-square rounded-3xl overflow-hidden bg-zinc-200 border-8 border-white shadow-2xl shadow-zinc-200">
-                <img 
-                  src="https://picsum.photos/seed/saurabh-anand-pro/800/800" 
+                <SafeImage 
+                  src="https://picsum.photos/seed/professional-seo/800/800" 
                   alt="Saurabh Anand - SEO Specialist" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
+                  className="w-full h-full"
                 />
               </div>
               {/* Floating badge */}
               <div className="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-zinc-100 hidden md:block">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center p-2">
-                    <img 
+                    <SafeImage 
                       src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" 
                       alt="Google G Logo" 
-                      className="w-full h-full object-contain"
-                      referrerPolicy="no-referrer"
+                      className="w-full h-full"
+                      objectFit="contain"
                     />
                   </div>
                   <div>
@@ -384,7 +439,7 @@ export default function App() {
           ].map((tool, i) => (
             <div key={tool.name + i} className="mx-12 flex items-center gap-4">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-zinc-100 p-1.5">
-                <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                <SafeImage src={tool.logo} alt={tool.name} className="w-full h-full" objectFit="contain" />
               </div>
               <span className="text-xl font-display font-bold text-zinc-300 uppercase tracking-tighter">
                 {tool.name}
@@ -405,7 +460,7 @@ export default function App() {
           ].map((tool, i) => (
             <div key={tool.name + "dup" + i} className="mx-12 flex items-center gap-4">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm border border-zinc-100 p-1.5">
-                <img src={tool.logo} alt={tool.name} className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                <SafeImage src={tool.logo} alt={tool.name} className="w-full h-full" objectFit="contain" />
               </div>
               <span className="text-xl font-display font-bold text-zinc-300 uppercase tracking-tighter">
                 {tool.name}
@@ -427,32 +482,31 @@ export default function App() {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[
-              { seed: "seo-strategy-1", title: "Strategy" },
-              { seed: "google-analytics-2", title: "Data" },
-              { seed: "organic-growth-3", title: "Growth" },
-              { seed: "search-optimization-4", title: "Optimization" },
-              { seed: "content-marketing-5", title: "Content" },
-              { seed: "user-experience-6", title: "User Experience" },
-              { seed: "web-dev-7", title: "Development" },
-              { seed: "seo-audit-8", title: "Audit" },
-              { seed: "keyword-research-9", title: "Keywords" },
-              { seed: "technical-seo-10", title: "Technical" },
-              { seed: "link-building-11", title: "Backlinks" },
-              { seed: "conversion-rate-12", title: "Conversion" }
+              { image: "https://picsum.photos/seed/seo-audit-report/800/800", title: "Technical Audit" },
+              { image: "https://picsum.photos/seed/data-analytics-dashboard/800/800", title: "GA4 Analytics" },
+              { image: "https://picsum.photos/seed/organic-growth-graph/800/800", title: "Organic Growth" },
+              { image: "https://picsum.photos/seed/seo-optimization-tools/800/800", title: "On-Page SEO" },
+              { image: "https://picsum.photos/seed/content-marketing-plan/800/800", title: "Content Strategy" },
+              { image: "https://picsum.photos/seed/ux-user-journey/800/800", title: "UX Optimization" },
+              { image: "https://picsum.photos/seed/web-performance-vitals/800/800", title: "Core Web Vitals" },
+              { image: "https://picsum.photos/seed/backlink-profile-analysis/800/800", title: "Link Building" },
+              { image: "https://picsum.photos/seed/keyword-mapping-sheet/800/800", title: "Keyword Mapping" },
+              { image: "https://picsum.photos/seed/ecommerce-seo-results/800/800", title: "E-commerce SEO" },
+              { image: "https://picsum.photos/seed/local-seo-map/800/800", title: "Local SEO" },
+              { image: "https://picsum.photos/seed/conversion-funnel-chart/800/800", title: "CRO Analysis" }
             ].map((item, i) => (
               <motion.div
-                key={item.seed}
+                key={item.title + i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
+                transition={{ delay: i * 0.05 }}
                 className="group relative aspect-square rounded-2xl overflow-hidden bg-zinc-100"
               >
-                <img 
-                  src={`https://picsum.photos/seed/${item.seed}/600/600`} 
+                <SafeImage 
+                  src={item.image} 
                   alt={item.title} 
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  referrerPolicy="no-referrer"
+                  className="w-full h-full group-hover:scale-110 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                   <p className="text-white font-bold text-sm uppercase tracking-widest">{item.title}</p>
@@ -489,13 +543,43 @@ export default function App() {
                 <div>
                   <p className="text-sm font-bold text-zinc-400 mb-2">{exp.period}</p>
                   <h4 className="text-2xl font-display font-bold text-zinc-900 mb-1">{exp.role}</h4>
-                  <p className="text-zinc-500 font-medium mb-4">{exp.company}</p>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-8 h-8 bg-white rounded-lg border border-zinc-100 flex items-center justify-center p-1 shadow-sm">
+                      <SafeImage 
+                        src={`https://www.google.com/s2/favicons?domain=${exp.domain}&sz=64`} 
+                        alt={exp.company} 
+                        className="w-full h-full"
+                        objectFit="contain"
+                        fallbackSrc={`https://ui-avatars.com/api/?name=${exp.company}&background=random`}
+                      />
+                    </div>
+                    <p className="text-zinc-500 font-medium">{exp.company}</p>
+                  </div>
                   <div className="flex flex-wrap gap-2">
-                    {exp.tools.map(tool => (
-                      <span key={tool} className="px-3 py-1 bg-white border border-zinc-100 rounded-full text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
-                        {tool}
-                      </span>
-                    ))}
+                    {exp.tools.map(tool => {
+                      const domainMap: { [key: string]: string } = {
+                        "Google Analytics": "analytics.google.com",
+                        "Search Console": "search.google.com",
+                        "Ahrefs": "ahrefs.com",
+                        "Semrush": "semrush.com",
+                        "Moz": "moz.com",
+                        "BuzzStream": "buzzstream.com",
+                        "Screaming Frog": "screamingfrog.co.uk"
+                      };
+                      const domain = domainMap[tool] || `${tool.toLowerCase().replace(/\s+/g, '')}.com`;
+                      return (
+                        <span key={tool} className="px-3 py-1 bg-white border border-zinc-100 rounded-full text-[10px] font-bold text-zinc-400 uppercase tracking-widest flex items-center gap-1.5">
+                          <SafeImage 
+                            src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`} 
+                            alt="" 
+                            className="w-3 h-3 opacity-60"
+                            objectFit="contain"
+                            hideOnError={true}
+                          />
+                          {tool}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
                 <div>
@@ -538,7 +622,7 @@ export default function App() {
                 growth: "+120% Traffic",
                 details: "A complete technical and content SEO overhaul for a travel booking platform. Focused on high-intent long-tail keywords and site speed optimization.",
                 tags: ["Technical SEO", "Content Strategy", "E-commerce"],
-                image: "https://picsum.photos/seed/ecommerce-seo-results/1200/800"
+                image: "https://picsum.photos/seed/ecommerce-seo/1200/800"
               },
               {
                 title: "SaaS Content Authority",
@@ -546,7 +630,15 @@ export default function App() {
                 growth: "+85% Leads",
                 details: "Building a content engine that drives qualified leads. Implemented a topic cluster strategy that established the brand as a thought leader in the SEO space.",
                 tags: ["Link Building", "Topic Clusters", "SaaS"],
-                image: "https://picsum.photos/seed/saas-growth-metrics/1200/800"
+                image: "https://picsum.photos/seed/saas-seo/1200/800"
+              },
+              {
+                title: "Local SEO for Multi-location Brand",
+                client: "Global Retailer",
+                growth: "+200% Visibility",
+                details: "Optimized Google Business Profiles and localized content for 50+ locations, resulting in a massive surge in 'near me' search rankings and foot traffic.",
+                tags: ["Local SEO", "GBP Optimization", "Scalable SEO"],
+                image: "https://picsum.photos/seed/local-seo-case/1200/800"
               }
             ].map((project, i) => (
               <motion.div
@@ -558,10 +650,10 @@ export default function App() {
                 className="bg-white rounded-[2.5rem] overflow-hidden border border-zinc-100 shadow-xl group"
               >
                 <div className="aspect-video overflow-hidden relative">
-                  <img src={project.image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" referrerPolicy="no-referrer" />
+                  <SafeImage src={project.image} alt={project.title} className="w-full h-full group-hover:scale-105 transition-transform duration-700" />
                   <div className="absolute top-6 right-6 flex gap-2">
                     <div className="bg-white/90 backdrop-blur-md p-2 rounded-xl border border-white/20 shadow-lg">
-                      <img src="https://www.gstatic.com/images/branding/product/1x/analytics_48dp.png" className="w-8 h-8 object-contain" alt="GA" />
+                      <SafeImage src="https://www.gstatic.com/images/branding/product/1x/analytics_48dp.png" className="w-8 h-8" objectFit="contain" alt="GA" />
                     </div>
                     <div className="bg-white/90 backdrop-blur-md p-2 rounded-xl border border-white/20 shadow-lg flex items-center justify-center">
                       <Search className="w-8 h-8 text-zinc-900" />
@@ -608,11 +700,18 @@ export default function App() {
               className="bg-zinc-50 p-10 rounded-[2.5rem] border border-zinc-100 flex flex-col items-center text-center group"
             >
               <div className="w-20 h-20 bg-white rounded-3xl shadow-sm border border-zinc-100 p-3 mb-8 group-hover:scale-110 transition-transform duration-500">
-                <img 
+                <SafeImage 
                   src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" 
                   alt="Google" 
-                  className="w-full h-full object-contain"
-                  referrerPolicy="no-referrer"
+                  className="w-full h-full"
+                  objectFit="contain"
+                />
+              </div>
+              <div className="mb-6 w-full aspect-video rounded-2xl overflow-hidden border border-zinc-100">
+                <SafeImage 
+                  src="https://picsum.photos/seed/google-cert/600/400" 
+                  alt="Google Certification" 
+                  className="w-full h-full"
                 />
               </div>
               <h4 className="text-2xl font-display font-bold mb-4">Google</h4>
@@ -633,11 +732,18 @@ export default function App() {
               className="bg-zinc-50 p-10 rounded-[2.5rem] border border-zinc-100 flex flex-col items-center text-center group"
             >
               <div className="w-20 h-20 bg-white rounded-3xl shadow-sm border border-zinc-100 p-3 mb-8 group-hover:scale-110 transition-transform duration-500">
-                <img 
+                <SafeImage 
                   src="https://www.google.com/s2/favicons?domain=linkedin.com&sz=128" 
                   alt="LinkedIn" 
-                  className="w-full h-full object-contain"
-                  referrerPolicy="no-referrer"
+                  className="w-full h-full"
+                  objectFit="contain"
+                />
+              </div>
+              <div className="mb-6 w-full aspect-video rounded-2xl overflow-hidden border border-zinc-100">
+                <SafeImage 
+                  src="https://picsum.photos/seed/linkedin-voice/600/400" 
+                  alt="LinkedIn Top Voice" 
+                  className="w-full h-full"
                 />
               </div>
               <h4 className="text-2xl font-display font-bold mb-4">LinkedIn Top Voice</h4>
@@ -661,16 +767,15 @@ export default function App() {
               <div className="relative group">
                 <div className="absolute -inset-4 bg-zinc-900/5 rounded-[2rem] blur-2xl group-hover:bg-zinc-900/10 transition-all duration-500" />
                 <div className="relative aspect-video rounded-3xl overflow-hidden bg-white shadow-2xl border border-zinc-100">
-                  <img 
-                    src="https://picsum.photos/seed/traffic-growth/1200/800" 
-                    alt="Organic Traffic Growth Chart" 
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
-                    referrerPolicy="no-referrer" 
+                  <SafeImage 
+                    src="https://images.unsplash.com/photo-1571721795195-a2ca2d3370a9?auto=format&fit=crop&q=80&w=1200" 
+                    alt="Google SEO Expertise Badge" 
+                    className="w-full h-full group-hover:scale-105 transition-transform duration-700" 
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end p-8">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent flex items-end p-8">
                     <div className="text-white">
-                      <p className="text-sm font-bold uppercase tracking-widest opacity-80 mb-2">Real-world Impact</p>
-                      <h4 className="text-2xl font-display font-bold">80% Organic Traffic Surge</h4>
+                      <p className="text-sm font-bold uppercase tracking-widest opacity-90 mb-2">Google SEO Expertise</p>
+                      <h4 className="text-2xl font-display font-bold">Data-Driven Organic Growth</h4>
                     </div>
                   </div>
                 </div>
@@ -693,13 +798,35 @@ export default function App() {
                 </div>
                 <div className="flex gap-6">
                   <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center shrink-0">
-                    <Globe className="w-6 h-6 text-zinc-900" />
+                    <BarChart3 className="w-6 h-6 text-zinc-900" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-lg mb-2">Off-Page & Link Building</h4>
+                    <h4 className="font-bold text-lg mb-2">Data-Driven Strategy</h4>
                     <p className="text-zinc-600 text-sm leading-relaxed">
-                      Executing high-impact outreach and guest blogging campaigns to build domain authority and high-quality backlink profiles.
+                      Leveraging Google Analytics and Search Console data to identify high-potential keywords and content gaps.
                     </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Google SEO Toolkit Visuals */}
+              <div className="mt-12 grid grid-cols-2 gap-4">
+                <div className="bg-white p-4 rounded-2xl border border-zinc-100 shadow-sm flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <SafeImage src="https://www.gstatic.com/images/branding/product/1x/analytics_48dp.png" className="w-8 h-8" objectFit="contain" alt="GA4" />
+                    <span className="text-xs font-bold text-zinc-900">GA4 Expert</span>
+                  </div>
+                  <div className="h-20 rounded-xl overflow-hidden">
+                    <SafeImage src="https://picsum.photos/seed/ga4-dashboard/400/200" alt="GA4 Dashboard" className="w-full h-full" />
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-2xl border border-zinc-100 shadow-sm flex flex-col gap-3">
+                  <div className="flex items-center gap-3">
+                    <SafeImage src="https://www.gstatic.com/images/branding/product/1x/search_console_48dp.png" className="w-8 h-8" objectFit="contain" alt="GSC" />
+                    <span className="text-xs font-bold text-zinc-900">GSC Specialist</span>
+                  </div>
+                  <div className="h-20 rounded-xl overflow-hidden">
+                    <SafeImage src="https://picsum.photos/seed/gsc-data/400/200" alt="GSC Data" className="w-full h-full" />
                   </div>
                 </div>
               </div>
@@ -731,17 +858,17 @@ export default function App() {
           {/* Organic Traffic Success Stories */}
           <div className="mt-24">
             <div className="text-center mb-12">
-              <h4 className="text-2xl font-display font-bold mb-2">Organic Traffic Success Stories</h4>
-              <p className="text-zinc-500 text-sm">Visualizing growth across multiple client projects</p>
+              <h4 className="text-2xl font-display font-bold mb-2">Google SEO Success Stories</h4>
+              <p className="text-zinc-500 text-sm">Real growth metrics achieved through technical and content optimization</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { seed: "ecommerce-seo-results", title: "E-commerce Optimization", growth: "+120%" },
-                { seed: "saas-growth-metrics", title: "SaaS Scaling", growth: "+85%" },
-                { seed: "local-seo-ranking", title: "Local SEO Dominance", growth: "+200%" }
+                { image: "https://picsum.photos/seed/search-console-growth/800/600", title: "Search Console Growth", growth: "+140% Clicks" },
+                { image: "https://picsum.photos/seed/analytics-data/800/600", title: "Analytics Data Scaling", growth: "+95% Traffic" },
+                { image: "https://picsum.photos/seed/seo-audit-tech/800/600", title: "Technical SEO Audit", growth: "+210% Visibility" }
               ].map((item, i) => (
                 <motion.div
-                  key={item.seed}
+                  key={item.title}
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -749,11 +876,10 @@ export default function App() {
                   className="group relative rounded-2xl overflow-hidden bg-white border border-zinc-100 shadow-sm"
                 >
                   <div className="aspect-[4/3] overflow-hidden">
-                    <img 
-                      src={`https://picsum.photos/seed/${item.seed}/800/600`} 
+                    <SafeImage 
+                      src={item.image} 
                       alt={item.title} 
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                      referrerPolicy="no-referrer"
+                      className="w-full h-full group-hover:scale-110 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-6">
@@ -776,66 +902,78 @@ export default function App() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white p-12 md:p-16 rounded-[3rem] border border-zinc-100 shadow-xl relative overflow-hidden"
+            className="bg-zinc-900 p-12 md:p-16 rounded-[3rem] border border-zinc-800 shadow-xl relative overflow-hidden group"
           >
-            {/* Decorative element */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+            {/* Background Image Layer */}
+            <div className="absolute inset-0 -z-0">
+              <SafeImage 
+                src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2070" 
+                alt="Growth Landscape" 
+                className="w-full h-full opacity-20 group-hover:scale-105 transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-zinc-900/80 to-transparent" />
+            </div>
             
-            <div className="relative">
+            <div className="relative z-10">
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 bg-zinc-900 rounded-full flex items-center justify-center text-white font-display font-bold">
+                <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-zinc-900 font-display font-bold">
                   SA
                 </div>
                 <div>
-                  <h4 className="font-bold text-zinc-900">Saurabh Anand</h4>
+                  <h4 className="font-bold text-white">Saurabh Anand</h4>
                   <p className="text-xs text-zinc-400 font-bold uppercase tracking-widest">SEO Analyst • Featured Post</p>
                 </div>
               </div>
 
-              <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-600 mb-4">Strategic Approach</h2>
-              <h3 className="text-4xl md:text-5xl font-display font-bold mb-8 leading-tight text-zinc-900">Sustainable Organic Growth: <br/><span className="text-zinc-400">Building Authority That Lasts</span></h3>
+              <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-400 mb-4">Strategic Approach</h2>
+              <h3 className="text-4xl md:text-5xl font-display font-bold mb-8 leading-tight text-white">Sustainable Organic Growth: <br/><span className="text-zinc-400">Building Authority That Lasts</span></h3>
               
-              <div className="prose prose-zinc max-w-none">
-                <p className="text-xl text-zinc-600 mb-8 leading-relaxed">
+              <div className="prose prose-invert max-w-none">
+                <p className="text-xl text-zinc-300 mb-8 leading-relaxed">
                   In the ever-evolving landscape of digital marketing, I've learned that true success isn't about chasing the latest algorithm update. It's about building a foundation so solid that it withstands the test of time.
                 </p>
                 
                 <div className="grid md:grid-cols-2 gap-12 mb-12">
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-zinc-900">
-                      <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center">
-                        <Code2 className="w-4 h-4" />
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center">
+                        <Code2 className="w-4 h-4 text-emerald-400" />
                       </div>
                       <h4 className="font-bold text-lg">Technical Foundation</h4>
                     </div>
-                    <p className="text-zinc-500 leading-relaxed">
+                    <p className="text-zinc-400 leading-relaxed">
                       SEO starts with a site that search engines can actually understand. I focus on crawlability, indexability, and site architecture to ensure every piece of content has the best chance to rank.
                     </p>
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 text-zinc-900">
-                      <div className="w-8 h-8 bg-zinc-100 rounded-lg flex items-center justify-center">
-                        <Palette className="w-4 h-4" />
+                    <div className="flex items-center gap-3 text-white">
+                      <div className="w-8 h-8 bg-zinc-800 rounded-lg flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-emerald-400" />
                       </div>
                       <h4 className="font-bold text-lg">Content Authority</h4>
                     </div>
-                    <p className="text-zinc-500 leading-relaxed">
+                    <p className="text-zinc-400 leading-relaxed">
                       Content is the bridge between your brand and your audience. I help create valuable, high-intent assets that not only rank but also earn backlinks naturally and convert visitors into loyal customers.
                     </p>
                   </div>
                 </div>
 
-                <div className="bg-zinc-50 p-8 rounded-2xl border border-zinc-100 italic text-zinc-600 text-lg">
+                <div className="bg-zinc-800/50 p-8 rounded-2xl border border-zinc-700 italic text-zinc-300 text-lg">
                   "My philosophy is simple: Don't build for search engines. Build for people, and optimize for search engines. That's how you achieve sustainable growth."
                 </div>
               </div>
 
               <div className="mt-12 pt-8 border-t border-zinc-100 flex items-center justify-between">
                 <div className="flex -space-x-2">
-                  {[1, 2, 3, 4].map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden">
-                      <img src={`https://picsum.photos/seed/user-${i}/100/100`} alt="User" referrerPolicy="no-referrer" />
+                  {[
+                    "1472099645785-5658abf4ff4e",
+                    "1500648767791-00dcc994a43e",
+                    "1544005313-94ddf0286df2",
+                    "1552058544-f2b08422138a"
+                  ].map(id => (
+                    <div key={id} className="w-8 h-8 rounded-full border-2 border-white bg-zinc-200 overflow-hidden">
+                      <SafeImage src={`https://images.unsplash.com/photo-${id}?auto=format&fit=facearea&facepad=2&w=100&h=100&q=80`} alt="User" />
                     </div>
                   ))}
                   <div className="w-8 h-8 rounded-full border-2 border-white bg-zinc-900 flex items-center justify-center text-[10px] text-white font-bold">
@@ -876,11 +1014,10 @@ export default function App() {
                 whileHover={{ scale: 1.02 }}
                 className="relative rounded-3xl overflow-hidden shadow-2xl border border-zinc-100"
               >
-                <img 
-                  src="https://picsum.photos/seed/traffic-analysis/1000/800" 
+                <SafeImage 
+                  src="https://images.unsplash.com/photo-1551288049-bbda38a5f452?auto=format&fit=crop&q=80&w=1000" 
                   alt="Traffic Analysis Chart" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
+                  className="w-full h-full"
                 />
               </motion.div>
             </div>
@@ -900,11 +1037,10 @@ export default function App() {
                 viewport={{ once: true }}
                 className="relative aspect-square rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl"
               >
-                <img 
-                  src="https://picsum.photos/seed/ecommerce-dashboard-analytics/1000/1000" 
+                <SafeImage 
+                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1000" 
                   alt="E-commerce Optimization Interface" 
-                  className="w-full h-full object-cover"
-                  referrerPolicy="no-referrer"
+                  className="w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-tr from-zinc-900/80 via-transparent to-transparent" />
                 
@@ -1158,11 +1294,11 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center p-1.5 border border-zinc-700">
-              <img 
+              <SafeImage 
                 src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" 
                 alt="Google" 
-                className="w-full h-full object-contain opacity-100 transition-opacity"
-                referrerPolicy="no-referrer"
+                className="w-full h-full"
+                objectFit="contain"
               />
             </div>
             <p className="text-zinc-500 text-sm font-medium">Google Certified SEO Analyst</p>
